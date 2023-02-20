@@ -1,0 +1,35 @@
+INFLUXDB:
+    host: ${INFLUXDB_HOST}
+    port: ${INFLUXDB_PORT}
+    user : ${INFLUXDB_USER}
+    password : ${INFLUXDB_PW}
+    db : ${INFLUXDB_DB}
+    
+USERS:
+    warn: ${phone1}, ${phone2}
+    
+
+CHECK_SERVER:
+    use_yn: use
+    query: SELECT DISTINCT(host) AS host FROM (SELECT ITEM_VALUE, host from disk_status where time > now() -10m) group by time(10m)
+    interval: 10m
+    
+CHECK_DISK:
+    use_yn: use
+    query: SELECT host, ITEM_TAG, ITEM_VALUE FROM disk_status where time > now() -20m and ITEM_VALUE >= 1
+    
+CHECK_FS_USAGE:
+    use_yn: use
+    query: SELECT host, ITEM_TAG, ITEM_VALUE FROM fs_usage where time > now() -10m and ITEM_VALUE >= 0.8
+    
+CHECK_INODE_USAGE:
+    use_yn: use
+    query: SELECT host, ITEM_TAG, ITEM_VALUE FROM inode_usage where time > now() -10m and ITEM_VALUE >= 0.1
+
+CHECK_CE_COUNT:
+    use_yn: use
+    query: SELECT host, ITEM_VALUE FROM memory_ce_cnt where time > now() -10m and ITEM_VALUE >= 1
+    
+CHECK_ZOMBIE_COUNT:
+    use_yn: use
+    query: SELECT host, ITEM_VALUE FROM zombie_cnt where time > now() -10m and ITEM_VALUE >= 0
