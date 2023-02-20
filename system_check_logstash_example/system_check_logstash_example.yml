@@ -1,0 +1,42 @@
+input {
+        kafka {
+                bootstrap_servers => "${KAFKA_BROKER#1},${KAFKA_BROKER#2},${KAFKA_BROKER#3}"
+                topics => ["${system_check_topic}"]
+                consumer_threads => 3
+                group_id => "${consumer_group_id}"
+        }
+}
+filter {
+        if [message] =~ /^system-check.*$/ {
+                csv {
+                        separator => "|"
+                        columns => ["measurement","host","EVENT_TIME","ITEM","ITEM_VALUE","ITEM_TAG"]
+                }
+                date {
+                        match => ["EVENT_TIME", "YYYYMMddHHmmss"]
+                        target => "@timestamp"
+                }
+        }
+        mutate {
+                remove_field => ["tags", "log", "ecs", "agent", "input", "@version", "message"]
+        }
+}
+output {
+#        stdout {
+#                codec => "rubydebug"
+#        }
+        if [measurement] == "system-check" {
+                influxdb {
+                        host => "${INFLUXDB_IP}"
+                        port => "${INFLUXDB_PORT}"
+                        db => "${INFLUXDB_DB}"
+                        allow_time_override => "true"
+                        use_event_fields_for_data_points => "true"
+                        measurement => "%{ITEM}"
+                        coerce_values => {
+                                "ITEM_VALUE" => "float"
+                        }
+                        send_as_tags => ["host", "ITEM_TAG", "ITEM"]
+                }
+        }
+}
