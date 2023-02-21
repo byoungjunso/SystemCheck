@@ -1,7 +1,7 @@
 # SystemCheck
 
 - 시스템 고장 예방, 탐지를 위해 자체 개발한 감시 환경
-    - SystemCheckAgent.sh: Bash Shell Script로 개발 되어 라이브러리 종속성을 최소화하고, Agent To Server 방식으로 보안성을 높였습니다.
+    - SystemCheckAgent.sh: Bash Shell Script로 개발 되어 라이브러리 종속성을 최소화하고, AgentToServer 방식으로 보안성을 높였습니다.
     - SystemChecker.py: SystemCheckAgent로 부터 수집된 데이터를 취합하고, Noti를 발송 합니다.
     
 - 구성도
